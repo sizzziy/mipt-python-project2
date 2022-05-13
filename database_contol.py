@@ -1,9 +1,11 @@
 import sqlite3
 
+
 class DatabaseControl:
     def __init__(self):
         try:
-            self.sqlite_connection = sqlite3.connect('users.db', check_same_thread=False)
+            self.sqlite_connection = sqlite3.connect('users.db',
+                                                     check_same_thread=False)
             sqlite_create_table_query = '''CREATE TABLE bot_users (
                                         uid INTEGER PRIMARY KEY,
                                         plan TEXT,
@@ -15,12 +17,10 @@ class DatabaseControl:
 
         except sqlite3.Error as error:
             print("ERROR:  ", error)
-    
 
     def __del__(self):
         if self.sqlite_connection:
             self.sqlite_connection.close()
-
 
     def add_user(self, uid, plan, left):
         sqlite_add = '''INSERT INTO bot_users (uid, plan, codes_left)
@@ -31,14 +31,13 @@ class DatabaseControl:
         self.sqlite_connection.commit()
         cursor.close()
 
-
     def change_codes_left(self, uid, delta):
-        sqlite_change = 'UPDATE bot_users SET codes_left = codes_left + {} WHERE uid = {};'.format(delta, uid)
+        c = 'UPDATE bot_users SET codes_left = codes_left + {} WHERE uid = {};'
+        sqlite_change = c.format(delta, uid)
         cursor = self.sqlite_connection.cursor()
         cursor.execute(sqlite_change)
         self.sqlite_connection.commit()
         cursor.close()
-
 
     def get_plan(self, uid):
         sqlite_change = 'SELECT plan FROM bot_users WHERE uid = {}'.format(uid)
@@ -49,9 +48,9 @@ class DatabaseControl:
         cursor.close()
         return res[0]
 
-
     def get_codes_left(self, uid):
-        sqlite_change = 'SELECT codes_left FROM bot_users WHERE uid = {}'.format(uid)
+        c = 'SELECT codes_left FROM bot_users WHERE uid = {}'
+        sqlite_change = c.format(uid)
         cursor = self.sqlite_connection.cursor()
         cursor.execute(sqlite_change)
         self.sqlite_connection.commit()
@@ -59,20 +58,21 @@ class DatabaseControl:
         cursor.close()
         return int(res[0])
 
-
     def set_plan(self, uid, plan):
-        sqlite_change = 'UPDATE bot_users SET plan = "{}" WHERE uid = {};'.format(plan, uid)
+        c = 'UPDATE bot_users SET plan = "{}" WHERE uid = {};'
+        sqlite_change = c.format(plan, uid)
         cursor = self.sqlite_connection.cursor()
         cursor.execute(sqlite_change)
         self.sqlite_connection.commit()
         cursor.close()
 
-
     def check_uid(self, uid):
-        sqlite_change = 'SELECT EXISTS (SELECT 1 FROM bot_users WHERE uid = {} )'.format(uid)
+        c = 'SELECT EXISTS (SELECT 1 FROM bot_users WHERE uid = {} )'
+        sqlite_change = c.format(uid)
         cursor = self.sqlite_connection.cursor()
         cursor.execute(sqlite_change)
         self.sqlite_connection.commit()
         res = cursor.fetchone()
         cursor.close()
         return bool(res[0])
+
